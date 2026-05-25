@@ -3,183 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Our Space</title>
+    <title>Dream Space v3</title>
     <style>
-        :root {
-            --bg-color: #f7f7f7;
-            --user-bubble: #f6a4b4;
-            --char-bubble: #ffffff;
-            --text-main: #333333;
-            --text-sub: #999999;
-        }
+        :root { --main-pink: #f6a4b4; --bg-gray: #f7f7f7; }
+        body { margin: 0; background: var(--bg-gray); font-family: sans-serif; display: flex; justify-content: center; overflow: hidden; }
+        .app-container { width: 100%; max-width: 500px; height: 100vh; background: #fffafa; display: flex; flex-direction: column; position: relative; }
 
-        body { margin: 0; padding: 0; background-color: var(--bg-color); font-family: -apple-system, sans-serif; display: flex; justify-content: center; }
+        /* 頂部功能列：新增儲存符號 */
+        .top-nav { background: #fff; padding: 10px 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; z-index: 100; }
+        .icon-btn { cursor: pointer; font-size: 1.4rem; transition: 0.2s; user-select: none; }
+        .icon-btn:hover { opacity: 0.6; }
 
-        .phone-container {
-            width: 100%; max-width: 500px; height: 100vh;
-            display: flex; flex-direction: column; background: #fffafa; position: relative;
-        }
+        .drawer { position: absolute; top: 50px; left: 0; width: 100%; background: white; border-bottom: 2px solid var(--main-pink); display: none; z-index: 90; padding: 15px; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-height: 70vh; overflow-y: auto; }
+        .drawer.active { display: block; }
 
-        /* 截圖風格頂部欄 */
-        .top-status-bar {
-            background: #fff; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;
-        }
-        .user-info { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-sub); }
-        .avatar-tiny { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #eee; }
-
-        /* 撥號區（仿截圖中間的膠囊形狀） */
-        .call-trigger-pill {
-            background: #1a1a1a; color: white; padding: 6px 15px; border-radius: 20px;
-            display: flex; align-items: center; gap: 10px; font-size: 0.8rem; cursor: pointer;
-        }
-
-        /* 浮動通話 UI (你原本的功能) */
-        #callUI {
-            display: none; position: fixed; top: 100px; right: 20px; width: 130px;
-            background: rgba(40, 40, 40, 0.95); color: white; border-radius: 15px; z-index: 9999;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); backdrop-filter: blur(5px);
-        }
-        .call-drag-handle { padding: 8px; cursor: move; background: rgba(255,255,255,0.1); border-radius: 15px 15px 0 0; font-size: 0.65rem; text-align: center; }
-
-        /* 字卡區 */
-        .card-manager { padding: 10px; background: #fff; border-bottom: 1px solid #eee; max-height: 100px; overflow-y: auto; }
-        .word-tag { display: inline-flex; align-items: center; background: #fff0f3; border: 1px solid #ffb6c1; padding: 3px 8px; margin: 2px; border-radius: 12px; font-size: 0.7rem; color: #ff8fa3; }
-        .del-card { margin-left: 4px; cursor: pointer; color: #ff4d6d; border: none; background: none; }
-
-        /* 聊天區域 */
-        .chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 18px; }
-        .chat-area::-webkit-scrollbar { display: none; }
-        .msg-group { display: flex; gap: 10px; max-width: 85%; animation: fadeIn 0.3s ease; }
+        /* 聊天顯示與引用 */
+        .chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .msg-group { display: flex; gap: 10px; max-width: 85%; position: relative; }
         .msg-group.me { align-self: flex-end; flex-direction: row-reverse; }
-        .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-        .msg-bubble { padding: 10px 14px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .me .msg-bubble { background: var(--user-bubble); color: white; border-top-right-radius: 4px; }
-        .char .msg-bubble { background: var(--char-bubble); color: var(--text-main); border-top-left-radius: 4px; border: 1px solid #eee; }
-        .time-stamp { font-size: 0.65rem; color: var(--text-sub); margin-top: 4px; }
+        .avatar-box { text-align: center; cursor: pointer; min-width: 50px; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+        .name-label { font-size: 0.65rem; color: #999; margin-top: 2px; }
+        .msg-bubble { padding: 10px 14px; border-radius: 18px; font-size: 0.95rem; position: relative; cursor: pointer; line-height: 1.4; }
+        .me .msg-bubble { background: var(--main-pink); color: white; border-top-right-radius: 4px; }
+        .char .msg-bubble { background: #fff; border: 1px solid #eee; border-top-left-radius: 4px; color: #333; }
+        
+        .reply-quote { font-size: 0.75rem; background: rgba(0,0,0,0.06); padding: 5px 8px; border-left: 3px solid var(--main-pink); margin-bottom: 5px; border-radius: 4px; color: #666; }
+        .reply-btn { position: absolute; top: 5px; right: -35px; display: none; cursor: pointer; font-size: 1.2rem; background: #fff; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 25px; height: 25px; text-align: center; line-height: 25px; }
+        .me .reply-btn { left: -35px; right: auto; }
 
-        /* 輸入欄 */
-        .bottom-bar { padding: 10px 15px 25px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
-        .input-box { flex: 1; background: #f0f0f0; border: none; padding: 10px 18px; border-radius: 20px; outline: none; }
-        .send-btn { background: #ffb6c1; color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; }
+        /* 表情包與輸入 */
+        .sticker-img { max-width: 140px; border-radius: 10px; display: block; margin-top: 5px; border: 1px solid #eee; }
+        .sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        .sticker-item { position: relative; border: 1px solid #eee; border-radius: 5px; overflow: hidden; }
+        .del-sticker { position: absolute; top: 0; right: 0; background: rgba(255,0,0,0.7); color: white; border: none; font-size: 10px; cursor: pointer; padding: 2px 5px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .bottom-bar { padding: 10px; background: #fff; border-top: 1px solid #eee; display: flex; align-items: center; gap: 10px; padding-bottom: 25px; }
+        .input-box { flex: 1; background: #f3f3f3; border: none; padding: 10px 15px; border-radius: 20px; outline: none; }
+        
+        #callUI { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 10px 25px; border-radius: 25px; display: none; z-index: 1000; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
-<div class="phone-container">
-    <div class="top-status-bar">
-        <div class="user-info"><img src="https://i.imgur.com/G4h1mYl.png" class="avatar-tiny"> 菊丸...</div>
-        <div class="call-trigger-pill" onclick="startCall()">
-            <img src="https://i.imgur.com/G4h1mYl.png" class="avatar-tiny" style="width:20px; height:20px;">
-            <span>點擊撥打</span>
-            <span style="color:#ff4d4d;">📞</span>
-        </div>
-        <div class="user-info">日向... <img src="https://i.imgur.com/yvX39u4.png" class="avatar-tiny"></div>
+<div class="app-container">
+    <div class="top-nav">
+        <span class="icon-btn" onclick="toggleDrawer('calendar')">📅</span>
+        <span class="icon-btn" onclick="toggleDrawer('cards')">🗂️</span>
+        <span class="icon-btn" onclick="toggleDrawer('stickers')">😊</span>
+        <span class="icon-btn" onclick="exportData()" title="導出資料">💾</span>
+        <span class="icon-btn" onclick="toggleDrawer('settings')">⚙️</span>
     </div>
 
-    <div class="card-manager">
-        <div id="cardsContainer"></div>
-        <div style="margin-top: 5px; display: flex; gap: 5px;">
-            <input type="text" id="newCardInput" placeholder="新增回覆..." style="flex:1; font-size: 0.7rem;">
-            <button onclick="saveNewCard()" style="font-size: 0.7rem;">新增</button>
+    <!-- 各種面板 -->
+    <div id="calendar" class="drawer">今日日期：<span id="dateStr"></span></div>
+    <div id="cards" class="drawer">
+        <h4 style="margin:0 0 10px 0;">字卡庫</h4>
+        <div id="cardList" style="margin-bottom:10px;"></div>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="newCard" placeholder="輸入回覆..." style="flex:1;">
+            <button onclick="addCard()">新增</button>
         </div>
+    </div>
+    <div id="stickers" class="drawer">
+        <h4 style="margin:0 0 10px 0;">表情包 (點擊發送)</h4>
+        <input type="file" accept="image/*" onchange="uploadSticker(this)">
+        <div class="sticker-grid" id="stickerGrid"></div>
+    </div>
+    <div id="settings" class="drawer">
+        <h4>設定</h4>
+        使用者名字：<input type="text" id="userNameInput" onchange="saveProfile()"><br><br>
+        大寶名字：<input type="text" id="charNameInput" onchange="saveProfile()"><br><br>
+        <button onclick="importData()" style="background:#eee; border:1px solid #ccc; padding:5px 10px;">匯入備份檔 (.json)</button>
+        <p style="font-size:0.6rem; color:gray; margin-top:10px;">* 點擊頭像可修改網址連結</p>
     </div>
 
     <div class="chat-area" id="chatArea"></div>
 
+    <!-- 引用預覽 -->
+    <div id="quotePreview" style="display:none; padding:8px 15px; background:#f0f0f0; font-size:0.8rem; border-left: 4px solid var(--main-pink);">
+        引用中... <span onclick="clearQuote()" style="float:right; cursor:pointer;">✕</span>
+    </div>
+
     <div class="bottom-bar">
-        <input type="text" id="userInput" class="input-box" placeholder="輸入訊息...">
-        <button onclick="handleUserSend()" class="send-btn">發送</button>
+        <span class="icon-btn" onclick="toggleCall()">📞</span>
+        <input type="text" id="userInput" class="input-box" placeholder="輸入...">
+        <button class="icon-btn" style="border:none; background:none; font-size:1.2rem;" onclick="handleSend()">🚀</button>
     </div>
 </div>
 
-<!-- 浮動通話面板 (保留你要求的功能) -->
 <div id="callUI">
-    <div class="call-drag-handle" id="callDragHandle">⋮⋮ 拖曳通話</div>
-    <div style="padding:12px; text-align:center;">
-        <div style="font-size:0.7rem; opacity:0.8;">菊丸 英二</div>
-        <div id="timer" style="font-family:monospace; font-size:1.1rem; margin:5px 0;">00:00</div>
-        <button onclick="hangUp()" style="background:#ff4d4d; color:white; border:none; border-radius:8px; font-size:0.7rem; padding:4px 10px; cursor:pointer;">掛斷</button>
-    </div>
+    <div style="font-size:0.7rem; opacity:0.7;">通話中</div>
+    <div id="callTimer">00:00</div>
+    <button onclick="toggleCall()" style="background:#ff4d4d; color:white; border:none; border-radius:5px; padding:2px 8px; margin-top:5px; font-size:0.7rem;">掛斷</button>
 </div>
 
 <script>
-    const STORAGE_KEY_MSGS = 'eiji_chat_history_v2';
-    const STORAGE_KEY_CARDS = 'eiji_word_cards_v2';
-    const USER_AVATAR = "https://i.imgur.com/yvX39u4.png";
-    const CHAR_AVATAR = "https://i.imgur.com/G4h1mYl.png";
-
-    let wordCards = JSON.parse(localStorage.getItem(STORAGE_KEY_CARDS)) || ["今天也要加油喔！", "不准太累！", "想我了嗎？", "🎾 嘿嘿！"];
-    let chatHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_MSGS)) || [];
-
-    window.onload = () => {
-        renderCards();
-        renderChat();
-        makeDraggable(document.getElementById("callUI"));
-        document.getElementById('userInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleUserSend(); });
+    // 核心資料庫 (LocalStorage)
+    let state = JSON.parse(localStorage.getItem('dream_data_v3')) || {
+        chat: [],
+        cards: ["今天也要加油喔！", "🎾 嘿嘿，贏了！", "想我了嗎？"],
+        stickers: [],
+        profiles: { 
+            me: { n: "日向 鈴音", a: "https://i.imgur.com/yvX39u4.png" }, 
+            char: { n: "菊丸 英二", a: "https://i.imgur.com/G4h1mYl.png" } 
+        }
     };
 
-    // 通話功能
+    let activeQuote = null;
     let callInterval, sec = 0;
-    function startCall() {
-        document.getElementById('callUI').style.display = 'block';
-        sec = 0; clearInterval(callInterval);
-        callInterval = setInterval(() => {
-            sec++;
-            let m = Math.floor(sec/60).toString().padStart(2, '0');
-            let s = (sec%60).toString().padStart(2, '0');
-            document.getElementById('timer').innerText = `${m}:${s}`;
-        }, 1000);
-    }
-    function hangUp() { document.getElementById('callUI').style.display = 'none'; clearInterval(callInterval); }
 
-    // 拖曳功能
-    function makeDraggable(el) {
-        let p1=0, p2=0, p3=0, p4=0;
-        const handle = document.getElementById("callDragHandle");
-        handle.onmousedown = dragMouseDown;
-        handle.ontouchstart = (e) => dragMouseDown(e.touches[0]);
-        function dragMouseDown(e) { p3=e.clientX; p4=e.clientY; document.onmouseup=closeDrag; document.onmousemove=elementDrag; document.ontouchend=closeDrag; document.ontouchmove=(e)=>elementDrag(e.touches[0]); }
-        function elementDrag(e) { p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY; el.style.top=(el.offsetTop-p2)+"px"; el.style.left=(el.offsetLeft-p1)+"px"; }
-        function closeDrag() { document.onmouseup=null; document.onmousemove=null; }
+    window.onload = () => {
+        document.getElementById('dateStr').innerText = new Date().toLocaleDateString();
+        document.getElementById('userNameInput').value = state.profiles.me.n;
+        document.getElementById('charNameInput').value = state.profiles.char.n;
+        renderAll();
+    };
+
+    function save() { localStorage.setItem('dream_data_v3', JSON.stringify(state)); }
+
+    // 導出功能：將 JSON 物件轉為檔案下載
+    function exportData() {
+        const dataStr = JSON.stringify(state);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = `DreamChat_Backup_${new Date().getTime()}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        alert("資料已導出！建議定期備份以節省瀏覽器空間。");
     }
 
-    // 聊天與存檔
-    function renderCards() {
-        document.getElementById('cardsContainer').innerHTML = wordCards.map((t, i) => `<div class="word-tag">${t}<button class="del-card" onclick="deleteCard(${i})">✕</button></div>`).join('');
-        localStorage.setItem(STORAGE_KEY_CARDS, JSON.stringify(wordCards));
+    // 匯入功能
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsText(file,'UTF-8');
+            reader.onload = readerEvent => {
+                const content = readerEvent.target.result;
+                state = JSON.parse(content);
+                save();
+                location.reload();
+            }
+        }
+        input.click();
     }
-    function saveNewCard() { const v = document.getElementById('newCardInput').value.trim(); if(v){wordCards.push(v); document.getElementById('newCardInput').value=''; renderCards();} }
-    function deleteCard(i) { wordCards.splice(i, 1); renderCards(); }
 
-    function handleUserSend() {
+    // 渲染 UI
+    function toggleDrawer(id) {
+        document.querySelectorAll('.drawer').forEach(d => { if(d.id !== id) d.classList.remove('active'); });
+        document.getElementById(id).classList.toggle('active');
+    }
+
+    function renderAll() { renderChat(); renderCards(); renderStickers(); }
+
+    function handleSend() {
         const input = document.getElementById('userInput');
-        if(!input.value.trim()) return;
-        addMsg('me', '日向 鈴音', input.value);
+        const text = input.value.trim();
+        if(!text) return;
+        
+        state.chat.push({ s: 'me', t: text, q: activeQuote, time: curTime() });
         input.value = '';
-        setTimeout(() => { if(wordCards.length > 0) addMsg('char', '菊丸 英二', wordCards[Math.floor(Math.random()*wordCards.length)]); }, 1000);
-    }
-
-    function addMsg(s, n, t) {
-        chatHistory.push({ s, n, t, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-        localStorage.setItem(STORAGE_KEY_MSGS, JSON.stringify(chatHistory));
+        clearQuote();
+        save();
         renderChat();
+
+        setTimeout(() => {
+            const isSticker = Math.random() > 0.8 && state.stickers.length > 0;
+            state.chat.push({ 
+                s: 'char', 
+                t: isSticker ? "" : state.cards[Math.floor(Math.random()*state.cards.length)],
+                img: isSticker ? state.stickers[Math.floor(Math.random()*state.stickers.length)] : null,
+                time: curTime() 
+            });
+            save(); renderChat();
+        }, 1000);
     }
 
     function renderChat() {
         const area = document.getElementById('chatArea');
-        area.innerHTML = chatHistory.map(m => `
+        area.innerHTML = state.chat.map((m, i) => `
             <div class="msg-group ${m.s}">
-                <img src="${m.s==='me'?USER_AVATAR:CHAR_AVATAR}" class="avatar">
+                <div class="avatar-box" onclick="changeAvatar('${m.s}')">
+                    <img src="${state.profiles[m.s].a}" class="avatar">
+                    <div class="name-label">${state.profiles[m.s].n}</div>
+                </div>
                 <div class="msg-content">
-                    <div class="msg-bubble">${m.t}</div>
-                    <div class="time-stamp">${m.time}</div>
+                    <div class="msg-bubble" onclick="showReplyBtn(${i})">
+                        ${m.q ? `<div class="reply-quote">${m.q}</div>` : ''}
+                        ${m.t}
+                        ${m.img ? `<img src="${m.img}" class="sticker-img">` : ''}
+                        <div class="reply-btn" id="rb-${i}" onclick="quoteMsg('${m.t || '圖片訊息'}')">💬</div>
+                    </div>
+                    <div style="font-size:0.55rem; color:#ccc; margin-top:3px;">${m.time}</div>
                 </div>
             </div>
         `).join('');
         area.scrollTop = area.scrollHeight;
     }
+
+    function showReplyBtn(i) {
+        document.querySelectorAll('.reply-btn').forEach(b => b.style.display = 'none');
+        document.getElementById(`rb-${i}`).style.display = 'block';
+    }
+    function quoteMsg(text) {
+        activeQuote = text.substring(0, 20) + (text.length > 20 ? "..." : "");
+        document.getElementById('quotePreview').style.display = 'block';
+        document.getElementById('quotePreview').innerHTML = `引用：${activeQuote} <span onclick="clearQuote()" style="float:right;">✕</span>`;
+    }
+    function clearQuote() { activeQuote = null; document.getElementById('quotePreview').style.display = 'none'; }
+
+    function uploadSticker(input) {
+        const file = input.files[0];
+        if(file.size > 500000) return alert("圖片太大囉，請選擇 500KB 以下的圖片以節省空間！");
+        const reader = new FileReader();
+        reader.onload = (e) => { state.stickers.push(e.target.result); save(); renderStickers(); };
+        reader.readAsDataURL(file);
+    }
+    function renderStickers() {
+        document.getElementById('stickerGrid').innerHTML = state.stickers.map((s, i) => `
+            <div class="sticker-item">
+                <img src="${s}" style="width:100%; height:80px; object-fit:cover;" onclick="sendSticker('${s}')">
+                <button class="del-sticker" onclick="event.stopPropagation();state.stickers.splice(${i},1);save();renderStickers();">✕</button>
+            </div>
+        `).join('');
+    }
+    function sendSticker(url) {
+        state.chat.push({ s: 'me', t: '', img: url, time: curTime() });
+        save(); renderChat(); toggleDrawer('stickers');
+    }
+
+    function toggleCall() {
+        const ui = document.getElementById('callUI');
+        if(ui.style.display === 'block') {
+            ui.style.display = 'none'; clearInterval(callInterval);
+        } else {
+            ui.style.display = 'block'; sec = 0;
+            callInterval = setInterval(() => {
+                sec++;
+                document.getElementById('callTimer').innerText = Math.floor(sec/60).toString().padStart(2,'0') + ":" + (sec%60).toString().padStart(2,'0');
+            }, 1000);
+        }
+    }
+    function saveProfile() {
+        state.profiles.me.n = document.getElementById('userNameInput').value;
+        state.profiles.char.n = document.getElementById('charNameInput').value;
+        save(); renderChat();
+    }
+    function changeAvatar(role) {
+        const url = prompt("請貼上新的圖片網址：", state.profiles[role].a);
+        if(url) { state.profiles[role].a = url; save(); renderChat(); }
+    }
+    function addCard() {
+        const v = document.getElementById('newCard').value;
+        if(v) { state.cards.push(v); document.getElementById('newCard').value=''; save(); renderCards(); }
+    }
+    function renderCards() {
+        document.getElementById('cardList').innerHTML = state.cards.map((c,i) => `
+            <div style="font-size:0.8rem; margin:5px 0; border-bottom:1px solid #f9f9f9;">
+                ${c} <span style="color:red; cursor:pointer; float:right;" onclick="state.cards.splice(${i},1);save();renderCards()">✕</span>
+            </div>`).join('');
+    }
+    function curTime() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
 </script>
 </body>
 </html>
