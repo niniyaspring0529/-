@@ -13,10 +13,9 @@
             --text-color: #4a4a4a;
         }
 
-        /* 安卓全螢幕基礎設定 */
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* 移除安卓點擊時的藍色高亮 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -29,9 +28,9 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            touch-action: pan-y; /* 允許垂直網頁滾動 */
         }
 
-        /* 主卡片：滿版且適應手機高度 */
         .main-card {
             background: var(--card-bg);
             width: 100%;
@@ -44,7 +43,6 @@
             height: calc(100vh - 20px);
         }
 
-        /* 日曆區 */
         .calendar-header {
             background: var(--primary);
             color: white;
@@ -55,7 +53,6 @@
             flex-shrink: 0;
         }
 
-        /* 心情與悄悄話 */
         .status-section {
             padding: 15px;
             text-align: center;
@@ -81,44 +78,45 @@
             line-height: 1.4;
         }
 
-        /* 字卡顯示區（自動撐開並可滾動） */
         .word-cards-container {
             padding: 15px;
             flex: 1;
             overflow-y: auto;
             background: #fffafb;
         }
+        .word-cards-container::-webkit-scrollbar { display: none; }
 
-        /* 隱藏安卓滾動條但保持滾動功能 */
-        .word-cards-container::-webkit-scrollbar {
-            display: none;
-        }
-
+        /* 修改字卡樣式：點擊即可發送 */
         .word-card {
             background: white;
             border-left: 5px solid var(--primary);
-            padding: 12px;
+            padding: 12px 40px 12px 12px;
             margin-bottom: 10px;
             border-radius: 8px;
             position: relative;
             font-size: 0.95rem;
             box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-            animation: fadeIn 0.3s ease;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .word-card:active {
+            background: #fff5f6;
         }
 
         .delete-btn {
             position: absolute;
             right: 8px;
-            top: 5px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
             color: #bbb;
             border: none;
             background: none;
-            font-size: 1.1rem;
-            padding: 5px;
+            font-size: 1.2rem;
+            padding: 8px;
+            z-index: 10;
         }
 
-        /* 字卡輸入區 */
         .add-word-area {
             display: flex;
             padding: 10px;
@@ -137,7 +135,6 @@
             font-size: 0.95rem;
         }
 
-        /* 對話與表情包區 */
         .chat-section {
             padding: 10px;
             background: #fff;
@@ -146,7 +143,7 @@
         }
 
         .chat-display {
-            height: 100px;
+            height: 120px;
             overflow-y: auto;
             background: #fafafa;
             border: 1px solid #eee;
@@ -156,65 +153,62 @@
         }
         .chat-display::-webkit-scrollbar { display: none; }
 
-        .msg { margin-bottom: 6px; font-size: 0.9rem; padding: 4px; border-radius: 5px; }
-        .msg.reply-mode { background: #fff0f2; border: 1px dashed var(--primary); }
+        .msg { margin-bottom: 6px; font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; line-height: 1.4; word-break: break-all; }
+        .msg.my-msg { background: #fff0f2; border: 1px dashed var(--primary); cursor: pointer; }
 
-        /* 表情包水平滾動區 */
         .sticker-box {
             display: flex;
             gap: 15px;
             overflow-x: auto;
-            padding: 5px 5px 10px 5px;
+            padding: 5px;
         }
         .sticker-box::-webkit-scrollbar { display: none; }
+        .sticker { font-size: 2.2rem; cursor: pointer; }
 
-        .sticker {
-            font-size: 2.2rem; /* 放大表情包方便手機點擊 */
-            cursor: pointer;
-        }
-
-        /* 安卓懸浮電話系統 */
+        /* --- 可拖曳電話懸浮窗 --- */
         #callUI {
             display: none;
             position: fixed;
             bottom: 80px;
             right: 20px;
-            width: 160px;
+            width: 150px;
             background: rgba(51, 51, 51, 0.95);
             color: white;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             z-index: 9999;
-            transition: all 0.2s ease;
             backdrop-filter: blur(5px);
+            /* 防止拖曳時選取到裡面的文字 */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* 縮小成小圓球樣式 */
+        /* 縮小成圓球 */
         #callUI.mini {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            bottom: 80px;
-            right: 20px;
         }
 
-        .call-body { padding: 12px; text-align: center; }
+        /* 增加拖曳手把區 */
+        .call-drag-handle {
+            padding: 8px 10px 0;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .drag-dots { color: #888; font-size: 0.8rem; }
+
+        .call-body { padding: 0 12px 12px 12px; text-align: center; }
         .call-body.hidden { display: none; }
         
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #eee; margin: 0 auto 5px; border: 2px solid var(--primary); }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #eee; margin: 5px auto; border: 2px solid var(--primary); }
         .timer { font-family: monospace; font-size: 1.1rem; margin: 5px 0; color: #fff; }
 
-        /* 按鈕優化 */
-        .btn {
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
+        .btn { border: none; border-radius: 20px; padding: 10px 20px; cursor: pointer; font-size: 0.95rem; font-weight: bold; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #ff4d4d; color: white; padding: 6px 15px; font-size: 0.85rem; }
+        .btn-danger { background: #ff4d4d; color: white; padding: 6px 12px; font-size: 0.8rem; border-radius: 15px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -253,8 +247,9 @@
     </div>
 
     <div id="callUI">
-        <div style="text-align:right; padding: 5px 10px 0 0;">
-            <span id="miniToggleBtn" onclick="toggleMini()" style="cursor:pointer; font-size: 1.5rem; color: var(--primary); font-weight:bold; padding: 5px;">−</span>
+        <div class="call-drag-handle" id="callDragHandle">
+            <span class="drag-dots">⋮⋮ 拖曳</span>
+            <span id="miniToggleBtn" onclick="toggleMini(event)" style="cursor:pointer; font-size: 1.3rem; color: var(--primary); font-weight:bold; padding: 0 5px;">−</span>
         </div>
         <div class="call-body" id="callBody">
             <div class="avatar"></div>
@@ -275,9 +270,9 @@
             document.getElementById('currentMood').innerText = moods[Math.floor(Math.random() * moods.length)];
             document.getElementById('randomTalk').innerText = `「${initWords[Math.floor(Math.random() * initWords.length)]}」`;
             
-            // 預載入兩條初始字卡
             createCardElement("今天也要開開心心！");
             createCardElement("打球記得多喝水 🥤");
+            makeElementDraggable(document.getElementById("callUI"));
         };
 
         // 字卡增刪
@@ -293,24 +288,43 @@
             const container = document.getElementById('cardsList');
             const div = document.createElement('div');
             div.className = 'word-card';
-            div.innerHTML = `${text} <button class="delete-btn" onclick="this.parentElement.remove()">✕</button>`;
+            // 點擊卡片本體傳送到聊天室，點擊X才是刪除
+            div.setAttribute('onclick', 'sendCardToChat(this, event)');
+            div.innerHTML = `<span class="card-text">${text}</span><button class="delete-btn" onclick="deleteCard(this, event)">✕</button>`;
             container.prepend(div);
         }
 
-        // 對話與表情
+        function deleteCard(btn, event) {
+            event.stopPropagation(); // 阻止觸發發送對話
+            btn.parentElement.remove();
+        }
+
+        // 功能 1：把字卡內容當作對話發送
+        function sendCardToChat(cardEl, event) {
+            const text = cardEl.querySelector('.card-text').innerText;
+            appendMessage(text);
+        }
+
+        // 發送表情包
         function sendSticker(emoji) {
+            appendMessage(emoji);
+        }
+
+        // 整合發送訊息與引用邏輯
+        function appendMessage(content) {
             const display = document.getElementById('chatDisplay');
             const msgDiv = document.createElement('div');
-            msgDiv.className = 'msg reply-mode';
+            msgDiv.className = 'msg my-msg';
             
-            let content = emoji;
+            let finalContent = content;
             if (selectedReply) {
-                content = `<small style="color:#888; display:block; border-bottom:1px dashed #ccc; margin-bottom:3px; padding-bottom:2px;">引用：${selectedReply}</small>${emoji}`;
+                finalContent = `<small style="color:#888; display:block; border-bottom:1px dashed #ccc; margin-bottom:3px; padding-bottom:2px;">引用：${selectedReply}</small>${content}`;
                 cancelReply();
             }
             
-            msgDiv.innerHTML = `<strong>我:</strong> ${content}`;
-            msgDiv.onclick = () => prepareReply(emoji);
+            msgDiv.innerHTML = `<strong>我:</strong> ${finalContent}`;
+            // 點擊訊息可以再度引用它
+            msgDiv.onclick = () => prepareReply(content);
             display.appendChild(msgDiv);
             display.scrollTop = display.scrollHeight;
         }
@@ -327,7 +341,7 @@
             document.getElementById('replyPreview').style.display = 'none';
         }
 
-        // 電話邏輯
+        // 電話系統
         let timerInt;
         let sec = 0;
         let isMini = false;
@@ -356,19 +370,99 @@
         function hangUp() {
             document.getElementById('callUI').style.display = 'none';
             clearInterval(timerInt);
-            if(isMini) toggleMini(); // 掛斷時如果是縮小狀態，自動還原
+            if(isMini) toggleMini(null);
         }
 
-        function toggleMini() {
+        function toggleMini(event) {
+            if(event) event.stopPropagation();
             const ui = document.getElementById('callUI');
             const body = document.getElementById('callBody');
             const btn = document.getElementById('miniToggleBtn');
+            const handle = document.getElementById('callDragHandle');
             
             isMini = !isMini;
             ui.classList.toggle('mini', isMini);
             body.classList.toggle('hidden', isMini);
-            btn.innerText = isMini ? "＋" : "−";
+            
+            if (isMini) {
+                btn.innerText = "＋";
+                handle.style.padding = "18px 0 0 0";
+                handle.style.justifyContent = "center";
+                document.querySelector('.drag-dots').style.display = 'none';
+            } else {
+                btn.innerText = "−";
+                handle.style.padding = "8px 10px 0";
+                handle.style.justifyContent = "space-between";
+                document.querySelector('.drag-dots').style.display = 'inline';
+            }
+        }
+
+        // 功能 2：實現安卓手機觸控拖曳 (也支援電腦滑鼠)
+        function makeElementDraggable(elmnt) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const dragHandle = document.getElementById("callDragHandle");
+
+            // 同時綁定滑鼠與觸控事件
+            dragHandle.onmousedown = dragMouseDown;
+            dragHandle.ontouchstart = dragTouchStart;
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function dragTouchStart(e) {
+                // 不阻斷縮小按鈕的點擊
+                if(e.target.id === "miniToggleBtn") return;
+                pos3 = e.touches[0].clientX;
+                pos4 = e.touches[0].clientY;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementTouchDrag;
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                updatePosition(pos1, pos2);
+            }
+
+            function elementTouchDrag(e) {
+                pos1 = pos3 - e.touches[0].clientX;
+                pos2 = pos4 - e.touches[0].clientY;
+                pos3 = e.touches[0].clientX;
+                pos4 = e.touches[0].clientY;
+                updatePosition(pos1, pos2);
+            }
+
+            function updatePosition(p1, p2) {
+                // 限制不要拖出螢幕外
+                let topPos = elmnt.offsetTop - p2;
+                let leftPos = elmnt.offsetLeft - p1;
+                
+                if(topPos < 0) topPos = 0;
+                if(topPos > window.innerHeight - elmnt.offsetHeight) topPos = window.innerHeight - elmnt.offsetHeight;
+                if(leftPos < 0) leftPos = 0;
+                if(leftPos > window.innerWidth - elmnt.offsetWidth) leftPos = window.innerWidth - elmnt.offsetWidth;
+
+                elmnt.style.top = topPos + "px";
+                elmnt.style.left = leftPos + "px";
+                elmnt.style.bottom = "auto";
+                elmnt.style.right = "auto";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
         }
     </script>
 </body>
-  </html>
+</html>
