@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Our Space</title>
+    <style>
+        :root {
+            --bg-color: #fff0f3;
+            --card-bg: #ffffff;
+            --primary: #ffb6c1;
+            --primary-dark: #ff8fa3;
+            --text-color: #4a4a4a;
+        }
+
+        /* 安卓全螢幕基礎設定 */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* 移除安卓點擊時的藍色高亮 */
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* 主卡片：滿版且適應手機高度 */
+        .main-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 20px);
+        }
+
+        /* 日曆區 */
+        .calendar-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* 心情與悄悄話 */
+        .status-section {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ffe4e8;
+            flex-shrink: 0;
+        }
+
+        .mood-badge {
+            display: inline-block;
+            background: #ffe4e8;
+            color: #ff4d6d;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        #randomTalk {
+            font-style: italic;
+            color: #777;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* 字卡顯示區（自動撐開並可滾動） */
+        .word-cards-container {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            background: #fffafb;
+        }
+
+        /* 隱藏安卓滾動條但保持滾動功能 */
+        .word-cards-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .word-card {
+            background: white;
+            border-left: 5px solid var(--primary);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            position: relative;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .delete-btn {
+            position: absolute;
+            right: 8px;
+            top: 5px;
+            cursor: pointer;
+            color: #bbb;
+            border: none;
+            background: none;
+            font-size: 1.1rem;
+            padding: 5px;
+        }
+
+        /* 字卡輸入區 */
+        .add-word-area {
+            display: flex;
+            padding: 10px;
+            gap: 8px;
+            background: white;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 10px 15px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        /* 對話與表情包區 */
+        .chat-section {
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .chat-display {
+            height: 100px;
+            overflow-y: auto;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+        .chat-display::-webkit-scrollbar { display: none; }
+
+        .msg { margin-bottom: 6px; font-size: 0.9rem; padding: 4px; border-radius: 5px; }
+        .msg.reply-mode { background: #fff0f2; border: 1px dashed var(--primary); }
+
+        /* 表情包水平滾動區 */
+        .sticker-box {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 5px 5px 10px 5px;
+        }
+        .sticker-box::-webkit-scrollbar { display: none; }
+
+        .sticker {
+            font-size: 2.2rem; /* 放大表情包方便手機點擊 */
+            cursor: pointer;
+        }
+
+        /* 安卓懸浮電話系統 */
+        #callUI {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 160px;
+            background: rgba(51, 51, 51, 0.95);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 9999;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 縮小成小圓球樣式 */
+        #callUI.mini {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            bottom: 80px;
+            right: 20px;
+        }
+
+        .call-body { padding: 12px; text-align: center; }
+        .call-body.hidden { display: none; }
+        
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #eee; margin: 0 auto 5px; border: 2px solid var(--primary); }
+        .timer { font-family: monospace; font-size: 1.1rem; margin: 5px 0; color: #fff; }
+
+        /* 按鈕優化 */
+        .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #ff4d4d; color: white; padding: 6px 15px; font-size: 0.85rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        <div class="calendar-header" id="dateDisplay">2026.05.26</div>
+        
+        <div class="status-section">
+            <div class="mood-badge" id="currentMood">☀️ 充滿活力</div>
+            <div id="randomTalk">「正在想你要說什麼...」</div>
+            <button class="btn btn-primary" style="margin-top:10px; width: 100%;" onclick="tryCall()">撥打電話給大寶 📞</button>
+        </div>
+
+        <div class="word-cards-container" id="cardsList"></div>
+
+        <div class="add-word-area">
+            <input type="text" id="wordInput" placeholder="新增今日字卡...">
+            <button class="btn btn-primary" style="padding: 10px 15px;" onclick="addCard()">+</button>
+        </div>
+
+        <div class="chat-section">
+            <div id="replyPreview" style="display:none; font-size: 0.8rem; background: #eee; padding: 6px; margin-bottom: 5px; border-radius: 5px;">
+                引用中... <span onclick="cancelReply()" style="float:right; color:red; font-weight:bold; padding:0 5px;">✕</span>
+            </div>
+            <div class="chat-display" id="chatDisplay"></div>
+            <div class="sticker-box">
+                <span class="sticker" onclick="sendSticker('😊')">😊</span>
+                <span class="sticker" onclick="sendSticker('🐱')">🐱</span>
+                <span class="sticker" onclick="sendSticker('💖')">💖</span>
+                <span class="sticker" onclick="sendSticker('🎾')">🎾</span>
+                <span class="sticker" onclick="sendSticker('💤')">💤</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="callUI">
+        <div style="text-align:right; padding: 5px 10px 0 0;">
+            <span id="miniToggleBtn" onclick="toggleMini()" style="cursor:pointer; font-size: 1.5rem; color: var(--primary); font-weight:bold; padding: 5px;">−</span>
+        </div>
+        <div class="call-body" id="callBody">
+            <div class="avatar"></div>
+            <div style="font-size:0.85rem; font-weight:bold;">大寶</div>
+            <div class="timer" id="timer">00:00</div>
+            <button class="btn btn-danger" onclick="hangUp()">掛斷</button>
+        </div>
+    </div>
+
+    <script>
+        const moods = ["☀️ 充滿活力", "☁️ 有點睏倦", "🐱 玩球中", "🎾 比賽完很累", "💖 想見你"];
+        const initWords = ["今天也要加油喔！", "記得想我～", "專題辛苦了！", "等一下要吃什麼？"];
+        let selectedReply = null;
+
+        window.onload = () => {
+            const now = new Date();
+            document.getElementById('dateDisplay').innerText = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`;
+            document.getElementById('currentMood').innerText = moods[Math.floor(Math.random() * moods.length)];
+            document.getElementById('randomTalk').innerText = `「${initWords[Math.floor(Math.random() * initWords.length)]}」`;
+            
+            // 預載入兩條初始字卡
+            createCardElement("今天也要開開心心！");
+            createCardElement("打球記得多喝水 🥤");
+        };
+
+        // 字卡增刪
+        function addCard() {
+            const input = document.getElementById('wordInput');
+            if (input.value.trim()) {
+                createCardElement(input.value);
+                input.value = '';
+            }
+        }
+
+        function createCardElement(text) {
+            const container = document.getElementById('cardsList');
+            const div = document.createElement('div');
+            div.className = 'word-card';
+            div.innerHTML = `${text} <button class="delete-btn" onclick="this.parentElement.remove()">✕</button>`;
+            container.prepend(div);
+        }
+
+        // 對話與表情
+        function sendSticker(emoji) {
+            const display = document.getElementById('chatDisplay');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg reply-mode';
+            
+            let content = emoji;
+            if (selectedReply) {
+                content = `<small style="color:#888; display:block; border-bottom:1px dashed #ccc; margin-bottom:3px; padding-bottom:2px;">引用：${selectedReply}</small>${emoji}`;
+                cancelReply();
+            }
+            
+            msgDiv.innerHTML = `<strong>我:</strong> ${content}`;
+            msgDiv.onclick = () => prepareReply(emoji);
+            display.appendChild(msgDiv);
+            display.scrollTop = display.scrollHeight;
+        }
+
+        function prepareReply(text) {
+            selectedReply = text;
+            const preview = document.getElementById('replyPreview');
+            preview.style.display = 'block';
+            preview.innerHTML = `引用中：${text} <span onclick="cancelReply()" style="float:right; color:red; font-weight:bold; padding:0 5px;">✕</span>`;
+        }
+
+        function cancelReply() {
+            selectedReply = null;
+            document.getElementById('replyPreview').style.display = 'none';
+        }
+
+        // 電話邏輯
+        let timerInt;
+        let sec = 0;
+        let isMini = false;
+
+        function tryCall() {
+            const chance = Math.random();
+            if (chance > 0.6) {
+                alert("對方忙碌中，或者正在練習網球喔...🎾");
+            } else {
+                startCall();
+            }
+        }
+
+        function startCall() {
+            document.getElementById('callUI').style.display = 'block';
+            sec = 0;
+            clearInterval(timerInt);
+            timerInt = setInterval(() => {
+                sec++;
+                let m = Math.floor(sec/60).toString().padStart(2, '0');
+                let s = (sec%60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function hangUp() {
+            document.getElementById('callUI').style.display = 'none';
+            clearInterval(timerInt);
+            if(isMini) toggleMini(); // 掛斷時如果是縮小狀態，自動還原
+        }
+
+        function toggleMini() {
+            const ui = document.getElementById('callUI');
+            const body = document.getElementById('callBody');
+            const btn = document.getElementById('miniToggleBtn');
+            
+            isMini = !isMini;
+            ui.classList.toggle('mini', isMini);
+            body.classList.toggle('hidden', isMini);
+            btn.innerText = isMini ? "＋" : "−";
+        }
+    </script>
+</body>
+  </html>
