@@ -51,29 +51,18 @@
             flex-shrink: 0;
         }
 
-        /* 狀態與電話區 */
+        /* 狀態區 */
         .status-section {
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             border-bottom: 1px solid #ffe4e8;
             flex-shrink: 0;
         }
 
-        .mood-badge {
-            display: inline-block;
-            background: #ffe4e8;
-            color: #ff4d6d;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        /* 字卡管理（這區現在純粹作為大寶的「台詞庫」） */
+        /* 字卡管理區：這是大寶的「台詞本」 */
         .word-cards-container {
-            padding: 10px;
-            max-height: 120px;
+            padding: 8px;
+            max-height: 100px;
             overflow-y: auto;
             background: #fffafb;
             border-bottom: 1px dashed #ffe4e8;
@@ -84,26 +73,27 @@
             display: inline-block;
             background: white;
             border: 1px solid var(--primary);
-            padding: 5px 30px 5px 10px;
-            margin: 4px;
-            border-radius: 15px;
+            padding: 4px 25px 4px 10px;
+            margin: 3px;
+            border-radius: 12px;
             position: relative;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            color: var(--primary-dark);
         }
 
         .delete-btn {
             position: absolute;
-            right: 5px;
+            right: 4px;
             top: 50%;
             transform: translateY(-50%);
             color: #ff4d6d;
             border: none;
             background: none;
-            font-weight: bold;
             cursor: pointer;
+            font-size: 0.9rem;
         }
 
-        /* 聊天室核心 */
+        /* 聊天室顯示區 */
         .chat-section {
             padding: 10px;
             background: #fdf2f4;
@@ -119,7 +109,7 @@
             padding: 5px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .chat-display::-webkit-scrollbar { display: none; }
 
@@ -155,22 +145,21 @@
             font-size: 0.95rem;
         }
 
-        /* 拖曳電話 */
+        /* 可拖曳電話 */
         #callUI {
             display: none;
             position: fixed;
             bottom: 150px;
             right: 20px;
-            width: 130px;
-            background: rgba(51, 51, 51, 0.9);
+            width: 120px;
+            background: rgba(40, 40, 40, 0.9);
             color: white;
-            border-radius: 15px;
+            border-radius: 12px;
             z-index: 9999;
             text-align: center;
-            user-select: none;
         }
         #callUI.mini { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; }
-        .call-drag-handle { padding: 5px; cursor: move; background: rgba(255,255,255,0.1); border-radius: 15px 15px 0 0; font-size: 0.7rem; }
+        .call-drag-handle { padding: 6px; cursor: move; background: rgba(255,255,255,0.1); border-radius: 12px 12px 0 0; font-size: 0.7rem; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -181,41 +170,42 @@
         <div class="calendar-header" id="dateDisplay">2026.05.26</div>
         
         <div class="status-section">
-            <div class="mood-badge" id="currentMood">🎾 練習中</div>
-            <button class="btn-primary" style="border:none; border-radius:15px; padding:8px; width:100%; font-weight:bold;" onclick="tryCall()">撥打電話給大寶 📞</button>
+            <button class="btn-primary" style="background:var(--primary); color:white; border:none; border-radius:12px; padding:8px; width:100%; font-weight:bold; cursor:pointer;" onclick="tryCall()">撥打電話 📞</button>
         </div>
 
-        <!-- 台詞庫：在這裡新增字卡，大寶會從這裡隨機挑話回你 -->
+        <!-- 這裡是大寶的字卡庫：他只能從這裡抽話回你 -->
         <div class="word-cards-container" id="cardsList"></div>
-        <div style="display:flex; padding:5px 10px; gap:5px; background:#fff;">
-            <input type="text" id="wordInput" style="font-size:0.8rem; padding:5px;" placeholder="新增大寶的自動回覆...">
-            <button onclick="addCard()" style="background:var(--primary); color:white; border:none; border-radius:5px; padding:0 10px;">+</button>
+        <div style="display:flex; padding:5px 10px; gap:5px; background:#fff; border-bottom:1px solid #eee;">
+            <input type="text" id="wordInput" style="font-size:0.75rem; flex:1; border:1px solid #eee; padding:3px 8px;" placeholder="新增大寶字卡...">
+            <button onclick="addCard()" style="background:var(--primary); color:white; border:none; border-radius:5px; padding:0 8px;">新增</button>
         </div>
 
         <div class="chat-section">
             <div class="chat-display" id="chatDisplay"></div>
         </div>
 
+        <!-- 這裡是你專用的鍵盤輸入區 -->
         <div class="chat-input-area">
             <div class="input-row">
-                <input type="text" id="userMsgInput" placeholder="傳訊息給大寶...">
-                <button onclick="sendUserMessage()" style="background:var(--primary); color:white; border:none; border-radius:20px; padding:0 15px; font-weight:bold;">發送</button>
+                <input type="text" id="userMsgInput" placeholder="在此輸入文字打字聊天...">
+                <button onclick="sendUserMessage()" style="background:var(--primary); color:white; border:none; border-radius:20px; padding:0 15px; font-weight:bold; cursor:pointer;">發送</button>
             </div>
         </div>
     </div>
 
     <!-- 電話懸浮 -->
     <div id="callUI">
-        <div class="call-drag-handle" id="callDragHandle">⋮⋮ 拖曳 <span onclick="toggleMini(event)" style="float:right; padding:0 5px;">−</span></div>
+        <div class="call-drag-handle" id="callDragHandle">⋮⋮ 拖曳 <span onclick="toggleMini(event)" style="float:right; padding:0 3px;">−</span></div>
         <div id="callBody" style="padding:10px;">
-            <div style="font-size:0.8rem;">大寶通話中</div>
-            <div id="timer" style="font-family:monospace; margin:5px 0;">00:00</div>
-            <button onclick="hangUp()" style="background:#ff4d4d; color:white; border:none; border-radius:10px; font-size:0.7rem; padding:3px 8px;">掛斷</button>
+            <div style="font-size:0.75rem;">通話中</div>
+            <div id="timer" style="font-family:monospace; margin:4px 0;">00:00</div>
+            <button onclick="hangUp()" style="background:#ff4d4d; color:white; border:none; border-radius:8px; font-size:0.7rem; padding:3px 8px;">掛斷</button>
         </div>
     </div>
 
     <script>
-        const initPhrases = ["今天也要加油喔！", "笨蛋，不准太累！", "想我了嗎？", "專題做完了嗎？", "🎾 嘿嘿，贏了！"];
+        // 預設的大寶字卡
+        const initPhrases = ["今天也要加油喔！", "笨蛋，不准太累！", "想我了嗎？", "🎾 嘿嘿，贏了！"];
         
         window.onload = () => {
             const now = new Date();
@@ -223,8 +213,8 @@
             initPhrases.forEach(p => createCardElement(p));
             makeElementDraggable(document.getElementById("callUI"));
             
-            // 進入畫面先打個招呼
-            setTimeout(() => appendMessage('character', '大寶', '唷！你來啦？'), 500);
+            // 綁定輸入框 Enter 鍵
+            document.getElementById('userMsgInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendUserMessage(); });
         };
 
         function addCard() {
@@ -240,27 +230,25 @@
             container.prepend(div);
         }
 
-        // 我方發送訊息
+        // 你手打鍵盤發送訊息
         function sendUserMessage() {
             const input = document.getElementById('userMsgInput');
             const text = input.value.trim();
             if (text) {
                 appendMessage('me', '我', text);
                 input.value = '';
-                // 觸發大寶的自動回覆
+                // 觸發大寶「從字卡庫」自動隨機挑一句回覆
                 triggerCharacterReply();
             }
         }
 
-        // 大寶自動隨機回覆邏輯
+        // 大寶自動回覆邏輯 (只限字卡內容)
         function triggerCharacterReply() {
-            // 隨機延遲 1~2 秒，模擬打字
-            const delay = Math.random() * 1000 + 1000;
+            const delay = Math.random() * 800 + 800; // 模擬 0.8~1.6 秒的思考時間
             
             setTimeout(() => {
                 const cards = document.querySelectorAll('.word-card span');
                 if (cards.length > 0) {
-                    // 從台詞庫中隨機選一句
                     const randomIndex = Math.floor(Math.random() * cards.length);
                     const replyText = cards[randomIndex].innerText;
                     appendMessage('character', '大寶', replyText);
@@ -277,7 +265,7 @@
             display.scrollTop = display.scrollHeight;
         }
 
-        // 電話功能與拖曳 (略同前版，已優化)
+        // 電話功能
         let timerInt, sec = 0, isMini = false;
         function tryCall() { document.getElementById('callUI').style.display = 'block'; startTimer(); }
         function startTimer() { 
@@ -305,4 +293,4 @@
         }
     </script>
 </body>
-</html>
+</html>            
