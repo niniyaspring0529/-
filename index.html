@@ -372,15 +372,14 @@
             appendMessage('character', '大寶', text);
         }
 
-        // 【功能新增】：我方自己輸入文字發送，靠右顯示
-        function sendUserMessage() {
-            const input = document.getElementById('userMsgInput');
-            const text = input.value.trim();
-            if (text) {
-                appendMessage('me', '我', text);
-                input.value = '';
-            }
-        }
+        // 點擊字卡，大寶會「讀取」一下再發出訊息
+        function sendCardAsCharacter(cardEl, event) {
+            const text = cardEl.querySelector('.card-text').innerText;
+        // 這裡設 1000 毫秒 = 1 秒
+            setTimeout(() => {
+            appendMessage('character', '大寶', text);
+            }, 1000); 
+         }
 
         // 發送表情包（預設歸類為我方發出的對話）
         function sendSticker(emoji) {
