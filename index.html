@@ -15,10 +15,7 @@
             --char-msg-bg: #ffffff;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
@@ -30,7 +27,6 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            touch-action: pan-y;
         }
 
         .main-card {
@@ -55,6 +51,7 @@
             flex-shrink: 0;
         }
 
+        /* 狀態與電話區 */
         .status-section {
             padding: 15px;
             text-align: center;
@@ -73,17 +70,10 @@
             font-weight: bold;
         }
 
-        #randomTalk {
-            font-style: italic;
-            color: #777;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        /* 字卡區（大寶的話語庫） */
+        /* 字卡管理（這區現在純粹作為大寶的「台詞庫」） */
         .word-cards-container {
-            padding: 12px;
-            max-height: 200px;
+            padding: 10px;
+            max-height: 120px;
             overflow-y: auto;
             background: #fffafb;
             border-bottom: 1px dashed #ffe4e8;
@@ -91,43 +81,29 @@
         .word-cards-container::-webkit-scrollbar { display: none; }
 
         .word-card {
+            display: inline-block;
             background: white;
-            border-left: 5px solid var(--primary);
-            padding: 10px 40px 10px 10px;
-            margin-bottom: 8px;
-            border-radius: 8px;
+            border: 1px solid var(--primary);
+            padding: 5px 30px 5px 10px;
+            margin: 4px;
+            border-radius: 15px;
             position: relative;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 0.8rem;
         }
-        .word-card:active { background: #fff5f6; }
 
         .delete-btn {
             position: absolute;
             right: 5px;
             top: 50%;
             transform: translateY(-50%);
-            cursor: pointer;
-            color: #bbb;
+            color: #ff4d6d;
             border: none;
             background: none;
-            font-size: 1.1rem;
-            padding: 8px;
-            z-index: 10;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        .add-word-area {
-            display: flex;
-            padding: 8px 12px;
-            gap: 8px;
-            background: white;
-            border-bottom: 1px solid #eee;
-            flex-shrink: 0;
-        }
-
-        /* 聊天室顯示區 */
+        /* 聊天室核心 */
         .chat-section {
             padding: 10px;
             background: #fdf2f4;
@@ -141,81 +117,34 @@
             flex: 1;
             overflow-y: auto;
             padding: 5px;
-            margin-bottom: 8px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .chat-display::-webkit-scrollbar { display: none; }
 
-        /* 對話氣泡樣式：區分左右 */
-        .msg-wrapper {
-            display: flex;
-            flex-direction: column;
-            max-width: 80%;
-            animation: fadeIn 0.2s ease;
-        }
-        
-        /* 我方訊息（靠右，粉色氣泡） */
-        .msg-wrapper.me {
-            align-self: flex-end;
-            align-items: flex-end;
-        }
-        /* 大寶訊息（靠左，白色氣泡） */
-        .msg-wrapper.character {
-            align-self: flex-start;
-            align-items: flex-start;
-        }
-
-        .msg-name {
-            font-size: 0.75rem;
-            color: #888;
-            margin-bottom: 2px;
-            padding: 0 4px;
-        }
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: fadeIn 0.3s ease; }
+        .msg-wrapper.me { align-self: flex-end; align-items: flex-end; }
+        .msg-wrapper.character { align-self: flex-start; align-items: flex-start; }
 
         .msg-bubble {
             padding: 10px 14px;
-            border-radius: 15px;
+            border-radius: 18px;
             font-size: 0.95rem;
             line-height: 1.4;
-            word-break: break-all;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            cursor: pointer;
         }
-        .me .msg-bubble {
-            background-color: var(--user-msg-bg);
-            color: var(--text-color);
-            border-bottom-right-radius: 4px;
-            border: 1px solid #ffd0d6;
-        }
-        .character .msg-bubble {
-            background-color: var(--char-msg-bg);
-            color: var(--text-color);
-            border-bottom-left-radius: 4px;
-            border: 1px solid #ebd0d4;
-        }
+        .me .msg-bubble { background: var(--user-msg-bg); border-bottom-right-radius: 4px; border: 1px solid #ffd0d6; }
+        .character .msg-bubble { background: var(--char-msg-bg); border-bottom-left-radius: 4px; border: 1px solid #ebd0d4; }
 
-        /* 輸入法與功能底欄 */
+        /* 打字輸入區 */
         .chat-input-area {
             background: white;
-            padding: 10px;
+            padding: 12px;
             border-top: 1px solid #eee;
             flex-shrink: 0;
         }
-        .input-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 5px;
-        }
-        .sticker-box {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 4px 0;
-        }
-        .sticker-box::-webkit-scrollbar { display: none; }
-        .sticker { font-size: 2rem; cursor: pointer; }
+        .input-row { display: flex; gap: 8px; }
 
         input[type="text"] {
             flex: 1;
@@ -226,44 +155,24 @@
             font-size: 0.95rem;
         }
 
-        /* 可拖曳電話懸浮窗 */
+        /* 拖曳電話 */
         #callUI {
             display: none;
             position: fixed;
-            bottom: 140px;
+            bottom: 150px;
             right: 20px;
-            width: 140px;
-            background: rgba(51, 51, 51, 0.95);
+            width: 130px;
+            background: rgba(51, 51, 51, 0.9);
             color: white;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             z-index: 9999;
-            backdrop-filter: blur(5px);
+            text-align: center;
             user-select: none;
-            -webkit-user-select: none;
         }
-        #callUI.mini { width: 60px; height: 60px; border-radius: 50%; }
+        #callUI.mini { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; }
+        .call-drag-handle { padding: 5px; cursor: move; background: rgba(255,255,255,0.1); border-radius: 15px 15px 0 0; font-size: 0.7rem; }
 
-        .call-drag-handle {
-            padding: 6px 10px 0;
-            cursor: move;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .drag-dots { color: #888; font-size: 0.75rem; }
-
-        .call-body { padding: 0 12px 12px 12px; text-align: center; }
-        .call-body.hidden { display: none; }
-        
-        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #eee; margin: 5px auto; border: 2px solid var(--primary); }
-        .timer { font-family: monospace; font-size: 1.1rem; margin: 3px 0; }
-
-        .btn { border: none; border-radius: 20px; padding: 10px 20px; cursor: pointer; font-size: 0.95rem; font-weight: bold; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #ff4d4d; color: white; padding: 5px 12px; font-size: 0.8rem; border-radius: 15px; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -272,183 +181,107 @@
         <div class="calendar-header" id="dateDisplay">2026.05.26</div>
         
         <div class="status-section">
-            <div class="mood-badge" id="currentMood">☀️ 充滿活力</div>
-            <div id="randomTalk">「正在想你要說什麼...」</div>
-            <button class="btn btn-primary" style="margin-top:8px; width: 100%;" onclick="tryCall()">撥打電話給大寶 📞</button>
+            <div class="mood-badge" id="currentMood">🎾 練習中</div>
+            <button class="btn-primary" style="border:none; border-radius:15px; padding:8px; width:100%; font-weight:bold;" onclick="tryCall()">撥打電話給大寶 📞</button>
         </div>
 
+        <!-- 台詞庫：在這裡新增字卡，大寶會從這裡隨機挑話回你 -->
         <div class="word-cards-container" id="cardsList"></div>
-
-        <div class="add-word-area">
-            <input type="text" id="wordInput" placeholder="新增大寶的字卡語句...">
-            <button class="btn btn-primary" style="padding: 8px 12px;" onclick="addCard()">+</button>
+        <div style="display:flex; padding:5px 10px; gap:5px; background:#fff;">
+            <input type="text" id="wordInput" style="font-size:0.8rem; padding:5px;" placeholder="新增大寶的自動回覆...">
+            <button onclick="addCard()" style="background:var(--primary); color:white; border:none; border-radius:5px; padding:0 10px;">+</button>
         </div>
 
         <div class="chat-section">
-            <div id="replyPreview" style="display:none; font-size: 0.8rem; background: #eee; padding: 6px; margin-bottom: 5px; border-radius: 5px; color:#4a4a4a;">
-                引用中... <span onclick="cancelReply()" style="float:right; color:red; font-weight:bold; padding:0 5px; cursor:pointer;">✕</span>
-            </div>
             <div class="chat-display" id="chatDisplay"></div>
         </div>
 
         <div class="chat-input-area">
             <div class="input-row">
-                <input type="text" id="userMsgInput" placeholder="輸入訊息向大寶搭話...">
-                <button class="btn btn-primary" style="padding: 10px 18px;" onclick="sendUserMessage()">發送</button>
-            </div>
-            <div class="sticker-box">
-                <span class="sticker" onclick="sendSticker('😊')">😊</span>
-                <span class="sticker" onclick="sendSticker('🐱')">🐱</span>
-                <span class="sticker" onclick="sendSticker('💖')">💖</span>
-                <span class="sticker" onclick="sendSticker('🎾')">🎾</span>
-                <span class="sticker" onclick="sendSticker('💤')">💤</span>
+                <input type="text" id="userMsgInput" placeholder="傳訊息給大寶...">
+                <button onclick="sendUserMessage()" style="background:var(--primary); color:white; border:none; border-radius:20px; padding:0 15px; font-weight:bold;">發送</button>
             </div>
         </div>
     </div>
 
+    <!-- 電話懸浮 -->
     <div id="callUI">
-        <div class="call-drag-handle" id="callDragHandle">
-            <span class="drag-dots">⋮⋮ 拖曳</span>
-            <span id="miniToggleBtn" onclick="toggleMini(event)" style="cursor:pointer; font-size: 1.2rem; color: var(--primary); font-weight:bold; padding: 0 5px;">−</span>
-        </div>
-        <div class="call-body" id="callBody">
-            <div class="avatar"></div>
-            <div style="font-size:0.8rem; font-weight:bold;">大寶</div>
-            <div class="timer" id="timer">00:00</div>
-            <button class="btn btn-danger" onclick="hangUp()">掛斷</button>
+        <div class="call-drag-handle" id="callDragHandle">⋮⋮ 拖曳 <span onclick="toggleMini(event)" style="float:right; padding:0 5px;">−</span></div>
+        <div id="callBody" style="padding:10px;">
+            <div style="font-size:0.8rem;">大寶通話中</div>
+            <div id="timer" style="font-family:monospace; margin:5px 0;">00:00</div>
+            <button onclick="hangUp()" style="background:#ff4d4d; color:white; border:none; border-radius:10px; font-size:0.7rem; padding:3px 8px;">掛斷</button>
         </div>
     </div>
 
     <script>
-        const moods = ["☀️ 充滿活力", "☁️ 有點睏倦", "🐱 玩球中", "🎾 比賽完很累", "💖 想見你"];
-        const initWords = ["今天也要加油喔！", "記得想我～", "專題辛苦了！", "等一下要吃什麼？"];
-        let selectedReply = null;
-
+        const initPhrases = ["今天也要加油喔！", "笨蛋，不准太累！", "想我了嗎？", "專題做完了嗎？", "🎾 嘿嘿，贏了！"];
+        
         window.onload = () => {
             const now = new Date();
             document.getElementById('dateDisplay').innerText = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`;
-            document.getElementById('currentMood').innerText = moods[Math.floor(Math.random() * moods.length)];
-            document.getElementById('randomTalk').innerText = `「${initWords[Math.floor(Math.random() * initWords.length)]}」`;
-            
-            // 初始大寶字卡
-            createCardElement("今天也要開開心心！");
-            createCardElement("打球記得多喝水 🥤");
-            createCardElement("笨蛋，不准太累喔！");
-            
+            initPhrases.forEach(p => createCardElement(p));
             makeElementDraggable(document.getElementById("callUI"));
-
-            // 綁定打字輸入框的 Enter 鍵
-            document.getElementById('userMsgInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') sendUserMessage();
-            });
+            
+            // 進入畫面先打個招呼
+            setTimeout(() => appendMessage('character', '大寶', '唷！你來啦？'), 500);
         };
 
-        // 字卡庫增刪
         function addCard() {
             const input = document.getElementById('wordInput');
-            if (input.value.trim()) {
-                createCardElement(input.value);
-                input.value = '';
-            }
+            if (input.value.trim()) { createCardElement(input.value); input.value = ''; }
         }
 
         function createCardElement(text) {
             const container = document.getElementById('cardsList');
             const div = document.createElement('div');
             div.className = 'word-card';
-            div.setAttribute('onclick', 'sendCardAsCharacter(this, event)');
-            div.innerHTML = `<span class="card-text">${text}</span><button class="delete-btn" onclick="deleteCard(this, event)">✕</button>`;
+            div.innerHTML = `<span>${text}</span><button class="delete-btn" onclick="this.parentElement.remove()">✕</button>`;
             container.prepend(div);
         }
 
-        function deleteCard(btn, event) {
-            event.stopPropagation();
-            btn.parentElement.remove();
-        }
-
-        // 【功能變更】：點擊字卡，由大寶（夢角）發出訊息，靠左顯示
-        function sendCardAsCharacter(cardEl, event) {
-            const text = cardEl.querySelector('.card-text').innerText;
-            appendMessage('character', '大寶', text);
-        }
-
-        // 點擊字卡，大寶會「讀取」一下再發出訊息
-        function sendCardAsCharacter(cardEl, event) {
-            const text = cardEl.querySelector('.card-text').innerText;
-        // 這裡設 1000 毫秒 = 1 秒
-            setTimeout(() => {
-            appendMessage('character', '大寶', text);
-            }, 1000); 
-         }
-
-        // 發送表情包（預設歸類為我方發出的對話）
-        function sendSticker(emoji) {
-            appendMessage('me', '我', emoji);
-        }
-
-        // 通用渲染訊息氣泡（支援引用回覆）
-        function appendMessage(senderType, senderName, content) {
-            const display = document.getElementById('chatDisplay');
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = `msg-wrapper ${senderType}`;
-            
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'msg-name';
-            nameDiv.innerText = senderName;
-            
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = 'msg-bubble';
-            
-            let finalContent = content;
-            if (selectedReply) {
-                finalContent = `<small style="color:#777; display:block; border-bottom:1px dashed #ccc; margin-bottom:4px; padding-bottom:2px;">引用：${selectedReply}</small>${content}`;
-                cancelReply();
+        // 我方發送訊息
+        function sendUserMessage() {
+            const input = document.getElementById('userMsgInput');
+            const text = input.value.trim();
+            if (text) {
+                appendMessage('me', '我', text);
+                input.value = '';
+                // 觸發大寶的自動回覆
+                triggerCharacterReply();
             }
+        }
+
+        // 大寶自動隨機回覆邏輯
+        function triggerCharacterReply() {
+            // 隨機延遲 1~2 秒，模擬打字
+            const delay = Math.random() * 1000 + 1000;
             
-            bubbleDiv.innerHTML = finalContent;
-            
-            // 點擊對話氣泡不分彼此都可以進行引用
-            bubbleDiv.onclick = () => prepareReply(`${senderName}: ${content}`);
-            
-            wrapper.appendChild(nameDiv);
-            wrapper.appendChild(bubbleDiv);
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.word-card span');
+                if (cards.length > 0) {
+                    // 從台詞庫中隨機選一句
+                    const randomIndex = Math.floor(Math.random() * cards.length);
+                    const replyText = cards[randomIndex].innerText;
+                    appendMessage('character', '大寶', replyText);
+                }
+            }, delay);
+        }
+
+        function appendMessage(sender, name, content) {
+            const display = document.getElementById('chatDisplay');
+            const wrapper = document.createElement('div');
+            wrapper.className = `msg-wrapper ${sender}`;
+            wrapper.innerHTML = `<div style="font-size:0.7rem; color:#888; margin-bottom:2px;">${name}</div><div class="msg-bubble">${content}</div>`;
             display.appendChild(wrapper);
-            
-            // 自動捲動到對話最底端
             display.scrollTop = display.scrollHeight;
         }
 
-        function prepareReply(text) {
-            selectedReply = text;
-            const preview = document.getElementById('replyPreview');
-            preview.style.display = 'block';
-            preview.innerHTML = `引用中：${text} <span onclick="cancelReply()" style="float:right; color:red; font-weight:bold; padding:0 5px;">✕</span>`;
-        }
-
-        function cancelReply() {
-            selectedReply = null;
-            document.getElementById('replyPreview').style.display = 'none';
-        }
-
-        // 電話系統
-        let timerInt;
-        let sec = 0;
-        let isMini = false;
-
-        function tryCall() {
-            const chance = Math.random();
-            if (chance > 0.6) {
-                alert("大寶忙碌中，或者正在練習網球喔...🎾");
-            } else {
-                startCall();
-            }
-        }
-
-        function startCall() {
-            document.getElementById('callUI').style.display = 'block';
-            sec = 0;
-            clearInterval(timerInt);
+        // 電話功能與拖曳 (略同前版，已優化)
+        let timerInt, sec = 0, isMini = false;
+        function tryCall() { document.getElementById('callUI').style.display = 'block'; startTimer(); }
+        function startTimer() { 
+            sec = 0; clearInterval(timerInt);
             timerInt = setInterval(() => {
                 sec++;
                 let m = Math.floor(sec/60).toString().padStart(2, '0');
@@ -456,99 +289,19 @@
                 document.getElementById('timer').innerText = `${m}:${s}`;
             }, 1000);
         }
-
-        function hangUp() {
-            document.getElementById('callUI').style.display = 'none';
-            clearInterval(timerInt);
-            if(isMini) toggleMini(null);
-        }
-
-        function toggleMini(event) {
-            if(event) event.stopPropagation();
+        function hangUp() { document.getElementById('callUI').style.display = 'none'; clearInterval(timerInt); }
+        function toggleMini(e) { 
+            e.stopPropagation(); isMini = !isMini;
             const ui = document.getElementById('callUI');
-            const body = document.getElementById('callBody');
-            const btn = document.getElementById('miniToggleBtn');
-            const handle = document.getElementById('callDragHandle');
-            
-            isMini = !isMini;
             ui.classList.toggle('mini', isMini);
-            body.classList.toggle('hidden', isMini);
-            
-            if (isMini) {
-                btn.innerText = "＋";
-                handle.style.padding = "18px 0 0 0";
-                handle.style.justifyContent = "center";
-                document.querySelector('.drag-dots').style.display = 'none';
-            } else {
-                btn.innerText = "−";
-                handle.style.padding = "6px 10px 0";
-                handle.style.justifyContent = "space-between";
-                document.querySelector('.drag-dots').style.display = 'inline';
-            }
+            document.getElementById('callBody').style.display = isMini ? 'none' : 'block';
         }
 
-        // 觸控拖曳
         function makeElementDraggable(elmnt) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            const dragHandle = document.getElementById("callDragHandle");
-
-            dragHandle.onmousedown = dragMouseDown;
-            dragHandle.ontouchstart = dragTouchStart;
-
-            function dragMouseDown(e) {
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
-
-            function dragTouchStart(e) {
-                if(e.target.id === "miniToggleBtn") return;
-                pos3 = e.touches[0].clientX;
-                pos4 = e.touches[0].clientY;
-                document.ontouchend = closeDragElement;
-                document.ontouchmove = elementTouchDrag;
-            }
-
-            function elementDrag(e) {
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                updatePosition(pos1, pos2);
-            }
-
-            function elementTouchDrag(e) {
-                pos1 = pos3 - e.touches[0].clientX;
-                pos2 = pos4 - e.touches[0].clientY;
-                pos3 = e.touches[0].clientX;
-                pos4 = e.touches[0].clientY;
-                updatePosition(pos1, pos2);
-            }
-
-            function updatePosition(p1, p2) {
-                let topPos = elmnt.offsetTop - p2;
-                let leftPos = elmnt.offsetLeft - p1;
-                
-                if(topPos < 0) topPos = 0;
-                if(topPos > window.innerHeight - elmnt.offsetHeight) topPos = window.innerHeight - elmnt.offsetHeight;
-                if(leftPos < 0) leftPos = 0;
-                if(leftPos > window.innerWidth - elmnt.offsetWidth) leftPos = window.innerWidth - elmnt.offsetWidth;
-
-                elmnt.style.top = topPos + "px";
-                elmnt.style.left = leftPos + "px";
-                elmnt.style.bottom = "auto";
-                elmnt.style.right = "auto";
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                document.ontouchend = null;
-                document.ontouchmove = null;
-            }
+            let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
+            const handle = document.getElementById("callDragHandle");
+            handle.onmousedown = (e) => { p3 = e.clientX; p4 = e.clientY; document.onmouseup = () => {document.onmousemove = null;}; document.onmousemove = (e) => { p1 = p3 - e.clientX; p2 = p4 - e.clientY; p3 = e.clientX; p4 = e.clientY; elmnt.style.top = (elmnt.offsetTop - p2) + "px"; elmnt.style.left = (elmnt.offsetLeft - p1) + "px"; elmnt.style.bottom = "auto"; elmnt.style.right = "auto"; }; };
+            handle.ontouchstart = (e) => { p3 = e.touches[0].clientX; p4 = e.touches[0].clientY; document.ontouchend = () => {document.ontouchmove = null;}; document.ontouchmove = (e) => { p1 = p3 - e.touches[0].clientX; p2 = p4 - e.touches[0].clientY; p3 = e.touches[0].clientX; p4 = e.touches[0].clientY; elmnt.style.top = (elmnt.offsetTop - p2) + "px"; elmnt.style.left = (elmnt.offsetLeft - p1) + "px"; elmnt.style.bottom = "auto"; elmnt.style.right = "auto"; }; };
         }
     </script>
 </body>
